@@ -17,7 +17,6 @@
         {% endwith %} 
 
     </div>
-
     <center>
         <a href="/">
             <p class="header">CSCB63 DESIGN AND ANALYSIS OF DATA STRUCTURES</p>
@@ -25,23 +24,23 @@
     </center>
     
     <center>
-        <p class="header">Student Log In </p>
+        <p class="header">Student Account Creation </p>
     </center>
     <div align="center">
-        <form action='/verify_student_user'>
+        <form action='/create_student_user'>
             <input name="username" value="username">
             <br>
             <input name="password" value="password">
             <br>
+            <input name="firstName" value="first name">
+            <br>
+            <input name="lastName" value="last name">
+            <br>
+            <input name="studentNo" value="studentNo">
+            <br>
             <input type="submit" name="submit" value="submit">        
         </form>
     </div>
-
-    <center>
-        <a href="/new_student_acct">
-            Click Here To Create New Account
-        </a>
-    </center>
 
 
 </body>
