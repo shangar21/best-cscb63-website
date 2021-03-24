@@ -5,7 +5,7 @@ from flask.cli import with_appcontext
 import os
 
 cwd = os.getcwd()
-DATABASE = cwd + '/database.db'
+DATABASE = 'database.db'
 
 def get_db():
     db = getattr(g, '_database', None)
