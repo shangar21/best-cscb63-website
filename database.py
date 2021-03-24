@@ -2,8 +2,10 @@ import sqlite3
 from flask import Flask, render_template,  request, current_app
 from flask import g
 from flask.cli import with_appcontext
+import os
 
-DATABASE = './database.db'
+cwd = os.getcwd()
+DATABASE = cwd + '/database.db'
 
 def get_db():
     db = getattr(g, '_database', None)

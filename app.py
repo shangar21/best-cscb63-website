@@ -2,6 +2,7 @@ from database import get_db, query_db, make_dicts, close_db
 from flask import Flask, render_template,  request, g, current_app, flash, redirect, url_for
 import sqlite3 as sql
 
+
 app = Flask(__name__)
 
 '''
@@ -33,6 +34,14 @@ def log_in_instructor():
 def syllabus():
     return render_template('syllabus.html')
 
+@app.route('/home')
+def home():
+    return render_template('home.html')
+
+@app.route('/calendar')
+def calendar():
+    return render_template('calendar.html')
+
 '''
 Back End:
 Front end uses this for data processing
@@ -52,7 +61,7 @@ def create_student_user():
         with sql.connect("./database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO StudentUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, studentNo))
-        return redirect(url_for('syllabus'))
+        return redirect(url_for('home'))
     flash("There is already an account with those credentials!")
     return redirect("/new_student_acct") 
 
@@ -70,7 +79,7 @@ def create_isntructor_user():
         with sql.connect("./database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO InstructorUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, instructorNo))
-        return redirect(url_for('syllabus'))
+        return redirect(url_for('home'))
     flash("There is already an account with those credentials!")
     return redirect("/new_instructor_acct")    
 
@@ -82,7 +91,7 @@ def verify_student_user():
     if query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)):
         if query_db("SELECT s.password FROM StudentUsers s WHERE s.username='{}';".format(username))[0][0] == password:
             flash('Log In Sucessful')
-            return redirect(url_for('syllabus'))
+            return redirect(url_for('home'))
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/student_log_in_page')
 
@@ -94,7 +103,7 @@ def verify_instructor_user():
     if query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)):
         if query_db("SELECT s.password FROM InstructorUsers s WHERE s.username='{}';".format(username))[0][0] == password:
             flash('Log In Sucessful')
-            return redirect(url_for('syllabus'))
+            return redirect(url_for('home'))
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/instructor_log_in')
 
