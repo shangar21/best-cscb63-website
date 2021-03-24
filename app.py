@@ -74,9 +74,6 @@ def create_isntructor_user():
     flash("There is already an account with those credentials!")
     return redirect("/new_instructor_acct")    
 
-    
-
-
 @app.route('/verify_student_user')
 def verify_student_user():
     username = request.args.get('username')
