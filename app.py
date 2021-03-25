@@ -3,6 +3,7 @@ from flask import Flask, render_template,  request, g, current_app, flash, redir
 import sqlite3 as sql
 
 
+
 app = Flask(__name__)
 
 '''
@@ -48,6 +49,14 @@ def home():
 def calendar():
     return render_template('calendar.html')
 
+@app.route('/studentmarks')
+def studentMarks():
+    return render_template('studentmarks.html')
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+    
 '''
 Back End:
 Front end uses this for data processing
@@ -109,7 +118,7 @@ def verify_instructor_user():
     if query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)):
         if query_db("SELECT s.password FROM InstructorUsers s WHERE s.username='{}';".format(username))[0][0] == password:
             flash('Log In Sucessful')
-            return redirect(url_for('home'))
+            return render_template('instructor_home.html')
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/instructor_log_in')
 
