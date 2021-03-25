@@ -5,4 +5,30 @@
         <p class="header">ADMIN</p>
     </center>
 
+
+    <center>
+        <p class="header">Create Assignment </p>
+    </center>
+    <div align="center">
+        <form action='/create_assignment'>
+            <input name="pdf" value="pdf">
+            <br>
+            <input name="tex" value="tex">
+            <br>
+            <input name="dueDate" value="Due Date">
+            <br>
+            <input name="weight" value="Weight">
+            <br>
+            <input name="assignmentDescription" value="Assignment Description">
+            <br>
+            <input type="submit" name="submit" value="submit">        
+        </form>
+    </div>
+
+    <div>
+        <p class="header">Student Marks</p>
+    </div>
+
+
+
 {% endblock %}

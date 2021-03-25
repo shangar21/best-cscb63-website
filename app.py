@@ -122,6 +122,25 @@ def verify_instructor_user():
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/instructor_log_in')
 
+
+@app.route('/create_assignment')
+def create_new_assignemnt():    
+    pdf = request.args.get('pdf')
+    tex = request.args.get('tex')
+    dueDate = request.args.get('dueDate')
+    weight = request.args.get('weight')
+    assignmentDescription = request.args.get('assignmentDescription')
+
+    aid = query_db('SELECT MAX(a.id) FROM Assignments a;')[0][0] + 1
+
+    if not query_db("SELECT a.description FROM Assignments a WHERE a.description='{}';".format(assignmentDescription)):            
+        with sql.connect("./database.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Assignments VALUES (?,?,?,?,?,?);", (aid, pdf, tex, dueDate, weight, assignmentDescription))
+        return render_template('admin.html')
+    flash("There is already an assignment with that description!")
+    return redirect("/admin")   
+
 '''
 Database closing
 '''
