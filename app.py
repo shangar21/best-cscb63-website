@@ -1,4 +1,4 @@
-from database import get_db, query_db, make_dicts, close_db
+from database import get_db, query_db, make_dicts, close_db, convert_dict
 from flask import Flask, render_template,  request, g, current_app, flash, redirect, url_for
 import sqlite3 as sql
 
@@ -33,6 +33,12 @@ def log_in_instructor():
 @app.route('/syllabus')
 def syllabus():
     return render_template('syllabus.html')
+
+@app.route('/assignments')
+def assignments():
+    assignments = query_db('SELECT * FROM Assignments;')
+    info = convert_dict(assignments)
+    return render_template('assignments.html', info=info);
 
 @app.route('/home')
 def home():
@@ -75,7 +81,7 @@ def create_isntructor_user():
 
     sid = query_db('SELECT MAX(s.id) FROM InstructorUsers s;')[0][0] + 1
 
-    if not query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.intructorNo FROM InstructorUsers s WHERE s.intructorNo='{}';".format(instructorNo)):            
+    if not query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.instructorNo FROM InstructorUsers s WHERE s.instructorNo='{}';".format(instructorNo)):            
         with sql.connect("./database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO InstructorUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, instructorNo))

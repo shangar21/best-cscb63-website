@@ -1,0 +1,41 @@
+{% extends "student_header.html" %}
+{% block content %}
+        <center>
+            <p class="header">ASSIGNMENTS</p>
+        </center>
+
+        <div class="row">
+            {% for key, value in info.items() %}
+            <div class="col-left">
+                <h1 class="row-header">{{ value[-1] }}</h1>
+                <div>
+                    <div class="col-pleft">
+                        <center>
+                            <a href="{{ value[0] }}">PDF</a>
+                        </center>                        
+                    </div>
+                    <div class="col-pleft">
+                        <center>
+                            <a href="{{ value[1] }}">TEX</a>
+                        </center>
+                    </div>
+                    <div class="col-pleft">
+                        <center>
+                            DUE DATE: {{ value[2] }}
+                        </center>
+                    </div>
+                    <center>
+                        <a href="https://gradescope.com">
+                            <div class="col-pleft">
+                                    SUBMIT
+                            </div>
+                        </a>
+                    </center>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+{% endblock %}
+

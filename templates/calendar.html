@@ -1,44 +1,12 @@
-<!DOCTYPE html>
-<head>
-    <link rel="stylesheet" href="./static/style.css">
-    <title>CSCB63</title>
-</head>
-<html>
-    <body class="dark">
-        
+{% extends "student_header.html" %}
+{% block content %}
         <center>
-            <p class="header">CSCB63 DESIGN AND ANALYSIS OF DATA STRUCTURES</p>
+            <p class="header">CALENDAR</p>
         </center>
-        
-        
-        
-        <ul class="nav">
-            <li><a href="/home">Home</a></li>
-            <li><a href="/calendar">Calendar</a></li>
-            <li><a href="/syllabus">Syllabus</a></li>
-            <li><a href="/assignments">Assignments</a></li>
-            <li><a href="/labs">Labs</a></li>
-            <li><a href="https://piazza.com/utoronto.ca/winter2021/cscb63h3slec01/home">Piazza</a></li>
-            <li><a href="https://markus.utsc.utoronto.ca/">Markus</a></li>
-            <li><a href="/feedback">Feedback</a></li>
-        </ul>
 
-        <br>
-
-        <center>
-            <p class="header">Calendar</p>
-        </center>
         <center>
             <iframe src="https://calendar.google.com/calendar/embed?src=f2oogqnfo1q728k3lcbtr4v478%40group.calendar.google.com&amp;ctz=America%2FToronto" style="border: 0" scrolling="yes" width="800px" height="600px" frameborder="0"></iframe></p>
         </center>
 
 
-        <div class="footer">
-        
-            <a class="linka" href="https://www.utsc.utoronto.ca/cms/faculty-of-computer-science">Link to faculty of Comptuer Science</a>
-             <a class="linka" href="https://shangar.ddns.net/">Site design by Sharanshangar Muhunthan and Abdullah Hasan</a> 
-         </div>
-    
-    </body>
-
-</html>
+{% endblock %}

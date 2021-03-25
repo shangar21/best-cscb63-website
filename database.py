@@ -27,4 +27,10 @@ def query_db(query, args=(), one=False):
 def make_dicts(cursor, row):
     return dict((cursor.description[idx][0], value) for idx, value in enumerate(row))
 
+def convert_dict(lst):
+    di = {}
+    for i in lst:
+        di[i[0]] = list(i[1:])
+    return di 
+
 
