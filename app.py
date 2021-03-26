@@ -38,7 +38,7 @@ def syllabus():
     global instructor
     global user
     syllabus = query_db('SELECT * FROM Syllabus;')
-    info = convert_dict(syllabus)
+    info = convert_dict(syllabus, 0)
     for key in info:
        for i in range(len(info[key])):
            info[key][i] = info[key][i].split(",")
@@ -50,7 +50,7 @@ def labs():
     global instructor
     global user
     syllabus = query_db('SELECT * FROM Labs;')
-    info = convert_dict(syllabus)
+    info = convert_dict(syllabus, 0)
     for key in info:
        for i in range(len(info[key])):
            info[key][i] = info[key][i].split(",")
@@ -62,7 +62,7 @@ def assignments():
     global instructor
     global user 
     assignments = query_db('SELECT * FROM Assignments;')
-    info = convert_dict(assignments)
+    info = convert_dict(assignments, 0)
     return render_template('assignments.html', user=user, instructor=instructor, info=info);
 
 @app.route('/home')
@@ -81,7 +81,9 @@ def calendar():
 def admin():
     global instructor
     global user
-    return render_template('dashboard.html', user=user, instructor=instructor)
+    assignment_grades = query_db('SELECT * FROM AssignmentGrades')
+    info = convert_dict(assignment_grades, 1)
+    return render_template('dashboard.html', user=user, instructor=instructor, info=info)
 
 @app.route('/logout')
 def log_out():
@@ -107,7 +109,7 @@ def create_student_user():
     sid = query_db('SELECT MAX(s.id) FROM StudentUsers s;')[0][0] + 1
 
     if not query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.studentNo FROM StudentUsers s WHERE s.studentNo='{}';".format(studentNo)):            
-        with sql.connect("./database.db") as con:
+        with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO StudentUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, studentNo))
         return redirect(url_for('home'))
@@ -125,7 +127,7 @@ def create_isntructor_user():
     sid = query_db('SELECT MAX(s.id) FROM InstructorUsers s;')[0][0] + 1
 
     if not query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.instructorNo FROM InstructorUsers s WHERE s.instructorNo='{}';".format(instructorNo)):            
-        with sql.connect("./database.db") as con:
+        with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO InstructorUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, instructorNo))
         return redirect(url_for('home'))
@@ -174,7 +176,7 @@ def create_new_assignemnt():
     aid = query_db('SELECT MAX(a.id) FROM Assignments a;')[0][0] + 1
 
     if not query_db("SELECT a.description FROM Assignments a WHERE a.description='{}';".format(assignmentDescription)):            
-        with sql.connect("./database.db") as con:
+        with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO Assignments VALUES (?,?,?,?,?,?);", (aid, pdf, tex, dueDate, weight, assignmentDescription))
         flash("Assignment Successfully added!")
@@ -197,7 +199,7 @@ def add_to_syllabus():
     sid = query_db('SELECT MAX(s.id) FROM Syllabus s;')[0][0] + 1
 
     if not query_db("SELECT s.topic FROM Syllabus s WHERE s.topic='{}';".format(topic)):            
-        with sql.connect("./database.db") as con:
+        with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?,?,?,?,?);", (sid, topic, wed_pre_lec, wed_pre_lec_labels, thurs_pre_lec, thurs_pre_lec_labels, wed_lec, wed_lec_labels, thurs_lec, thurs_lec_labels))
         flash("Sucessfully added to syllabus!")
@@ -216,7 +218,7 @@ def add_to_labs():
     lid = query_db('SELECT MAX(l.id) FROM Labs l;')[0][0] + 1
 
     if not query_db("SELECT s.topic FROM Labs s WHERE s.topic='{}';".format(topic)):            
-        with sql.connect("./database.db") as con:
+        with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?);", (lid, topic, handout, handout_label, solutions, solutions_label))
         flash("Successfully added to Labs!")
@@ -224,6 +226,24 @@ def add_to_labs():
     flash("There is already an assignment with that description!")
     return redirect("/dashboard")
 
+@app.route('/update_student_grade')
+def update_student_grade():
+    aid = request.args.get('aid')
+    username = request.args.get('username')
+    grade = request.args.get('grade')
+
+    if query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)) and query_db('SELECT a.id FROM Assignments a WHERE a.id={};'.format(aid)):
+        if not query_db("SELECT g.username, g.aid FROM AssignmentGrades g WHERE g.username='{}' AND g.aid={};".format(username, aid)):            
+            weight = query_db("SELECT a.weight FROM Assignments a WHERE a.id='{}';".format(aid))[0][0]
+            with sql.connect('database.db') as con:
+                cur = con.cursor()
+                cur.execute('INSERT INTO assignmentGrades VALUES(?,?,?,?)', (aid, username, grade, weight))
+            flash("Sucessfully updated Grade!")
+            return redirect('/dashboard')
+        flash("Grade Already Updated!")
+        return redirect('/dashboard')
+    flash("User not registered!")
+    return redirect('/dashboard')
 '''
 Database closing
 '''

@@ -71,6 +71,21 @@
         </form>
     </div>
 
+    <center>
+        <p class="header">Update Assignment Grade</p>
+    </center>
+    <div align="center">
+        <form action='/update_student_grade'>
+            <input name="aid" value="Assignment #">
+            <br>
+            <input name="username" value="Student's Username">
+            <br>
+            <input name="grade" value="Grade Received">
+            <br>
+            <input type="submit" name="submit" value="submit">
+        </form>
+    </div>
+
     {% else %}
         <center>
             <p class="header">{{ user }} Marks</p>
