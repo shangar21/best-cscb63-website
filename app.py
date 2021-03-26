@@ -40,8 +40,8 @@ def syllabus():
     syllabus = query_db('SELECT * FROM Syllabus;')
     info = convert_dict(syllabus, 0)
     for key in info:
-       for i in range(len(info[key])):
-           info[key][i] = info[key][i].split(",")
+       for i in range(len(info[key][0])):
+           info[key][0][i] = info[key][0][i].split(",")
     
     return render_template('syllabus.html', user=user, instructor=instructor, info=info)
 
@@ -52,8 +52,8 @@ def labs():
     syllabus = query_db('SELECT * FROM Labs;')
     info = convert_dict(syllabus, 0)
     for key in info:
-       for i in range(len(info[key])):
-           info[key][i] = info[key][i].split(",")
+       for i in range(len(info[key][0])):
+           info[key][0][i] = info[key][0][i].split(",")
     
     return render_template('labs.html', user=user, instructor=instructor, info=info)
 
@@ -81,9 +81,15 @@ def calendar():
 def admin():
     global instructor
     global user
-    assignment_grades = query_db('SELECT * FROM AssignmentGrades')
+    assignment_grades = query_db('SELECT * FROM AssignmentGrades;')
     info = convert_dict(assignment_grades, 1)
-    return render_template('dashboard.html', user=user, instructor=instructor, info=info)
+    assignments = query_db('SELECT * FROM Assignments;')
+    assignments = convert_dict(assignments, 5)
+
+    if not instructor and user and user in info:
+        info = {user : info[user]}
+    
+    return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments)
 
 @app.route('/logout')
 def log_out():

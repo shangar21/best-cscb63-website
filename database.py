@@ -32,7 +32,8 @@ def convert_dict(lst, index):
     for i in lst:
         if i[index] in di:
             di[i[index]].append(list(i[:index])+list(i[index+1:]))
-        di[i[index]] = list(i[:index])+list(i[index+1:])
+        else:
+            di[i[index]] = [list(i[:index])+list(i[index+1:])]
     return di 
 
-
+        

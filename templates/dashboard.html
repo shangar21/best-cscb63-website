@@ -6,6 +6,18 @@
         <p class="header">ADMIN</p>
     </center>
 
+    <div align="center">
+        {% with messages = get_flashed_messages()%}
+        {% if messages %}
+            <ul class="col-p">
+                {% for message in messages %} 
+                <li>{{ message }}</li>
+                {% endfor %} 
+            </ul>
+        {% endif %} 
+        {% endwith %} 
+    </div>
+
     <center>
         <p class="header">Add To Syllabus</p>
     </center>
@@ -86,9 +98,52 @@
         </form>
     </div>
 
+    <center>
+        <p class="header">Student Grades</p>
+    </center>
+
+    <center>
+        <table>
+            <tr> 
+                <th>Username</th>
+                {% for key, value in assignments.items() %} 
+                <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+            {% for key, value in grade_info.items() %} 
+            <tr>
+                <th>{{ key }}</th>
+                {% for g in value %} 
+                <th> {{ g[1] }}</th>
+                {% endfor %} 
+            </tr>
+            {% endfor %} 
+        </table>
+    </center>
+
+
     {% else %}
         <center>
             <p class="header">{{ user }} Marks</p>
+        </center>
+
+        <center>
+            <table>
+                <tr> 
+                    <th>Username</th>
+                    {% for key, value in assignments.items() %} 
+                    <th>{{ key }}</th>
+                    {% endfor %}
+                </tr>
+                {% for key, value in grade_info.items() %} 
+                <tr>
+                    <th>{{ key }}</th>
+                    {% for g in value %} 
+                    <th> {{ g[1] }}</th>
+                    {% endfor %} 
+                </tr>
+                {% endfor %} 
+            </table>
         </center>
     {% endif %}
 

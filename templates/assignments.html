@@ -7,21 +7,21 @@
         <div class="row">
             {% for key, value in info.items() %}
             <div class="col-left">
-                <h1 class="row-header">{{ value[-1] }}</h1>
+                <h1 class="row-header">{{ value[0][-1] }}</h1>
                 <div>
                     <div class="col-pleft">
                         <center>
-                            <a href="{{ value[0] }}">PDF</a>
+                            <a href="{{ value[0][0] }}">PDF</a>
                         </center>                        
                     </div>
                     <div class="col-pleft">
                         <center>
-                            <a href="{{ value[1] }}">TEX</a>
+                            <a href="{{ value[0][1] }}">TEX</a>
                         </center>
                     </div>
                     <div class="col-pleft">
                         <center>
-                            DUE DATE: {{ value[2] }}
+                            DUE DATE: {{ value[0][2] }}
                         </center>
                     </div>
                     <center>
@@ -31,7 +31,6 @@
                             </div>
                         </a>
                     </center>
-
                 </div>
             </div>
             {% endfor %}
