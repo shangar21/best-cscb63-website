@@ -1,41 +1,39 @@
-<!DOCTYPE html>
-<head>
-    <link rel="stylesheet" href="./static/style.css">
-    <title>CSCB63</title>
-</head>
-
-<html>
-    <body class="dark">
+{% extends "header.html" %}
+{% block content %}
         <center>
-            <a href="/">
-                <p class="header">CSCB63 DESIGN AND ANALYSIS OF DATA STRUCTURES</p>
-            </a>
-        </center>
-        
-        
-        
-        <ul class="nav">
-            <li><a href="/home">Home</a></li>
-            <li><a href="/calendar">Calendar</a></li>
-            <li><a href="/syllabus">Syllabus</a></li>
-            <li><a href="/assignments">Assignments</a></li>
-            <li><a href="/labs">Labs</a></li>
-            <li><a href="https://piazza.com/utoronto.ca/winter2021/cscb63h3slec01/home">Piazza</a></li>
-            <li><a href="https://markus.utsc.utoronto.ca/">Markus</a></li>
-            <li><a href="/feedback">Feedback</a></li>
-        </ul>
-
-        <br>
-
-        <center>
-            <p class="header">SYLLABUS</p>
+            <p class="header">Syllabus</p>
         </center>
 
-        <center>
-            <p class="header">Log In Successful</p>
-        </center>
+        <div class="row">
+            {% for key, value in info.items() %}
+            <div class="col-left">
+                <h1 class="row-header">Week {{ key }}</h1>
+                <p class="topic">{{ value [0][0] }}</p>
+                <p class="row-subheader">Wednesday</p>
+                <p class="col-p">
+                    {% for pre_lec in value[2] %}
+                    <a href='{{ value[1][loop.index - 1] }}'>{{ pre_lec }}</a>
+                    {% endfor %}
+                </p>
+                <p class="col-p">
+                    {% for lec in value[6] %}
+                    <a href='{{ value[5][loop.index - 1] }}'>{{ lec }}</a>
+                    {% endfor %}
+                </p>
+                <p class="row-subheader"> Thurday</p>
+                <p class="col-p">
+                    {% for pre_lec in value[4] %}
+                    <a href='{{ value[3][loop.index - 1] }}'>{{ pre_lec }}</a>
+                    {% endfor %}
+                </p>
+                <p class="col-p">
+                    {% for lec in value[8] %}
+                    <a href='{{ value[7][loop.index - 1] }}'>{{ lec }}</a>
+                    {% endfor %}
+                </p>
+            </div>
+            
+            {% endfor %}
+        </div>
 
-                
-    </body>
-
-</html>
+{% endblock %}

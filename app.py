@@ -5,6 +5,8 @@ import sqlite3 as sql
 
 
 app = Flask(__name__)
+instructor = False
+user = ''
 
 '''
 Page Rendering: 
@@ -33,29 +35,61 @@ def log_in_instructor():
 
 @app.route('/syllabus')
 def syllabus():
-    return render_template('syllabus.html')
+    global instructor
+    global user
+    syllabus = query_db('SELECT * FROM Syllabus;')
+    info = convert_dict(syllabus)
+    for key in info:
+       for i in range(len(info[key])):
+           info[key][i] = info[key][i].split(",")
+    
+    return render_template('syllabus.html', user=user, instructor=instructor, info=info)
+
+@app.route('/labs')
+def labs():
+    global instructor
+    global user
+    syllabus = query_db('SELECT * FROM Labs;')
+    info = convert_dict(syllabus)
+    for key in info:
+       for i in range(len(info[key])):
+           info[key][i] = info[key][i].split(",")
+    
+    return render_template('labs.html', user=user, instructor=instructor, info=info)
 
 @app.route('/assignments')
 def assignments():
+    global instructor
+    global user 
     assignments = query_db('SELECT * FROM Assignments;')
     info = convert_dict(assignments)
-    return render_template('assignments.html', info=info);
+    return render_template('assignments.html', user=user, instructor=instructor, info=info);
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    global instructor
+    global user
+    return render_template('home.html', user=user, instructor=instructor)
 
 @app.route('/calendar')
 def calendar():
-    return render_template('calendar.html')
+    global instructor
+    global user
+    return render_template('calendar.html', user=user, instructor=instructor)
 
-@app.route('/studentmarks')
-def studentMarks():
-    return render_template('studentmarks.html')
-
-@app.route('/admin')
+@app.route('/dashboard')
 def admin():
-    return render_template('admin.html')
+    global instructor
+    global user
+    return render_template('dashboard.html', user=user, instructor=instructor)
+
+@app.route('/logout')
+def log_out():
+    global user
+    global instructor
+    user = ''
+    instructor = False
+    return redirect('/')
     
 '''
 Back End:
@@ -100,25 +134,31 @@ def create_isntructor_user():
 
 @app.route('/verify_student_user')
 def verify_student_user():
+    global user
     username = request.args.get('username')
     password = request.args.get('password')
 
     if query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)):
         if query_db("SELECT s.password FROM StudentUsers s WHERE s.username='{}';".format(username))[0][0] == password:
             flash('Log In Sucessful')
+            user = username
             return redirect(url_for('home'))
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/student_log_in_page')
 
 @app.route('/verify_instructor_user')
 def verify_instructor_user():
+    global user
+    global instructor
     username = request.args.get('username')
     password = request.args.get('password')
 
     if query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)):
         if query_db("SELECT s.password FROM InstructorUsers s WHERE s.username='{}';".format(username))[0][0] == password:
             flash('Log In Sucessful')
-            return render_template('instructor_home.html')
+            user = username
+            instructor = True 
+            return redirect('/home')
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/instructor_log_in')
 
@@ -137,9 +177,52 @@ def create_new_assignemnt():
         with sql.connect("./database.db") as con:
             cur = con.cursor()
             cur.execute("Insert INTO Assignments VALUES (?,?,?,?,?,?);", (aid, pdf, tex, dueDate, weight, assignmentDescription))
-        return render_template('admin.html')
+        flash("Assignment Successfully added!")
+        return redirect('/dashboard')
     flash("There is already an assignment with that description!")
-    return redirect("/admin")   
+    return redirect("/dashboard")   
+
+@app.route('/add_to_syllabus')
+def add_to_syllabus():
+    topic = request.args.get('topic')    
+    wed_pre_lec = request.args.get('wed_pre_lec')
+    wed_pre_lec_labels = request.args.get('wed_pre_lec_labels')
+    thurs_pre_lec = request.args.get('thurs_pre_lec')
+    thurs_pre_lec_labels = request.args.get('thurs_pre_lec_labels')
+    wed_lec = request.args.get('wed_lec')
+    wed_lec_labels = request.args.get('wed_lec_labels')
+    thurs_lec = request.args.get('thurs_lec')
+    thurs_lec_labels = request.args.get('thurs_lec_labels')
+
+    sid = query_db('SELECT MAX(s.id) FROM Syllabus s;')[0][0] + 1
+
+    if not query_db("SELECT s.topic FROM Syllabus s WHERE s.topic='{}';".format(topic)):            
+        with sql.connect("./database.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?,?,?,?,?);", (sid, topic, wed_pre_lec, wed_pre_lec_labels, thurs_pre_lec, thurs_pre_lec_labels, wed_lec, wed_lec_labels, thurs_lec, thurs_lec_labels))
+        flash("Sucessfully added to syllabus!")
+        return redirect('/dashboard')
+    flash("There is already an assignment with that description!")
+    return redirect("/dashboard")   
+
+@app.route('/add_to_labs')
+def add_to_labs():
+    topic = request.args.get('topic')    
+    handout = request.args.get('handout')
+    handout_label = request.args.get('handout_label')
+    solutions = request.args.get('solutions')
+    solutions_label = request.args.get('solutions_label')
+
+    lid = query_db('SELECT MAX(l.id) FROM Labs l;')[0][0] + 1
+
+    if not query_db("SELECT s.topic FROM Labs s WHERE s.topic='{}';".format(topic)):            
+        with sql.connect("./database.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?);", (lid, topic, handout, handout_label, solutions, solutions_label))
+        flash("Successfully added to Labs!")
+        return redirect('/dashboard')
+    flash("There is already an assignment with that description!")
+    return redirect("/dashboard")
 
 '''
 Database closing

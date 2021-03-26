@@ -1,0 +1,80 @@
+{% extends "header.html" %}
+{% block content %}
+
+    {% if instructor %}
+    <center>
+        <p class="header">ADMIN</p>
+    </center>
+
+    <center>
+        <p class="header">Add To Syllabus</p>
+    </center>
+    <div align="center">
+        <form action='/add_to_syllabus'>
+            <input name="topic" value="topic">
+            <br>
+            <input name="wed_pre_lec" value="Insert Links or TB chapter To Wednesday Pre Lecture Material Seperated with Commas, put in 'None' if there is nothing">
+            <br>
+            <input name="wed_pre_lec_labels" value="Insert Labels of Above Material Seperated by Comma, if not link simply repeat input">
+            <br>
+            <input name="thurs_pre_lec" value="Insert Links or TB chapter To Thurday Pre Lecture Material Seperated with Commas, put in 'None' if there is nothing">
+            <br>
+            <input name="thurs_pre_lec_labels" value="Insert Labels of Above Material Seperated by Comma, if not link simply repeat input">
+            <br>
+            <input name="wed_lec" value="Insert Links for Wednesday Lecture Material and Recordings Seperated with Commas, put in 'None' if there is nothing">
+            <br>
+            <input name="wed_lec_labels" value="Insert Labels of Above Material Seperated by Comma, if not link simply repeat input">
+            <br>
+            <input name="thurs_lec" value="Insert Links for Thurday Lecture Material and Recordings Seperated with Commas, put in 'None' if there is nothing">
+            <br>
+            <input name="thurs_lec_labels" value="Insert Labels of Above Material Seperated by Comma, if not link simply repeat input">
+            <br>
+            <input type="submit" name="submit" value="submit">        
+        </form>
+    </div>
+
+    <center>
+        <p class="header">Create Assignment </p>
+    </center>
+    <div align="center">
+        <form action='/create_assignment'>
+            <input name="pdf" value="pdf">
+            <br>
+            <input name="tex" value="tex">
+            <br>
+            <input name="dueDate" value="Due Date">
+            <br>
+            <input name="weight" value="Weight">
+            <br>
+            <input name="assignmentDescription" value="Assignment Description">
+            <br>
+            <input type="submit" name="submit" value="submit">        
+        </form>
+    </div>
+
+    <center>
+        <p class="header">Add to Labs</p>
+    </center>
+    <div align="center">
+        <form action='/add_to_labs'>
+            <input name="topic" value="topic">
+            <br>
+            <input name="handout" value="Insert Link for Handout seperated with commas, if None put 'None'">
+            <br>
+            <input name="handout_label" value="Insert Labels for Handouts above, if None pup 'None'">
+            <br>
+            <input name="solutions" value="Insert Link for Solutions seperated with commas, if None put 'None'">
+            <br>
+            <input name="solutions_label" value="Insert Labels for Handouts above, if None pup 'None'">
+            <br>
+            <input type="submit" name="submit" value="submit">        
+        </form>
+    </div>
+
+    {% else %}
+        <center>
+            <p class="header">{{ user }} Marks</p>
+        </center>
+    {% endif %}
+
+{% endblock %}

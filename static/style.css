@@ -45,6 +45,8 @@ a:hover{
 }
 .nav li{
     display:inline;
+    color: green;
+    font-size: 16px;
 
 }
 .nav a{
@@ -52,7 +54,6 @@ a:hover{
     display:inline-block;
     padding:10px;
     color: white;
-    font-family:"Roboto"
 }
 
 .nav a:hover{
@@ -162,5 +163,4 @@ a:hover{
     -moz-box-shadow:    0px 0px 5px 6px #696969;  
     box-shadow:         0px 0px 5px 6px #696969;
 }
-
 
