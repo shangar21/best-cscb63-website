@@ -63,7 +63,7 @@ def assignments():
     global user 
     assignments = query_db('SELECT * FROM Assignments;')
     info = convert_dict(assignments, 0)
-    return render_template('assignments.html', user=user, instructor=instructor, info=info);
+    return render_template('assignments.html', user=user, instructor=instructor, info=info)
 
 @app.route('/home')
 def home():
@@ -89,7 +89,23 @@ def admin():
     if not instructor and user and user in info:
         info = {user : info[user]}
     
+    print(info)
     return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments)
+
+@app.route('/feedback')
+def feedback():
+    global instructor
+    global user
+    all_instructors = query_db('SELECT *FROM InstructorUsers')
+    all_instructors = convert_dict(all_instructors,1)
+    all_feedback = query_db('SELECT * FROM Feedback')
+    all_feedback = convert_dict(all_feedback,1)
+    print(all_feedback)
+    if instructor and user and user in all_feedback:
+        all_feedback = {user : all_feedback[user]}
+    print(all_feedback)
+    return render_template('feedback.html', user=user, instructor=instructor, all_instructors = all_instructors, all_feedback = all_feedback)
+
 
 @app.route('/logout')
 def log_out():
@@ -189,6 +205,25 @@ def create_new_assignemnt():
         return redirect('/dashboard')
     flash("There is already an assignment with that description!")
     return redirect("/dashboard")   
+
+@app.route('/add_to_feedback')
+def addToFeedback():
+    instructor = request.args.get('instructor')
+    rating = request.args.get('rating')
+    likeTeach = request.args.get('likeTeach')
+    impTeach = request.args.get('impTeach')
+    likeLab = request.args.get('likeLab')
+    impLab = request.args.get('impLab')
+
+    fid = query_db('SELECT MAX(f.id) FROM Feedback f;')[0][0] + 1
+
+    with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Feedback VALUES (?,?,?,?,?,?,?);", (fid, instructor, rating, likeTeach, impTeach, likeLab, impLab))
+    flash("Feedback Successfully sent!")
+    return redirect('/feedback')
+
+
 
 @app.route('/add_to_syllabus')
 def add_to_syllabus():

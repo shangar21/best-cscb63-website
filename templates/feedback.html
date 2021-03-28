@@ -1,0 +1,81 @@
+{% extends "header.html" %}
+{% block content %}
+
+    {% if instructor %}
+    <center>
+        <p class="header">{{ user }} Feedback</p>
+    </center>
+
+    <center>
+        <table>
+            <tr> 
+                <th>Rating</th>
+                <th>Pros of Teaching</th>
+                <th>Cons of teaching</th>
+                <th>Pros of Labs</th>
+                <th>Cons of Labs</th>
+                
+            </tr>
+            {% for key, value in all_feedback.items() %} 
+            <tr>
+                
+                {% for g in value %} 
+                <td> {{ g[1] }}</td>
+                <td> {{ g[2] }}</td>
+                <td> {{ g[3] }}</td>
+                <td> {{ g[4] }}</td>
+                <td> {{ g[5] }}</td>
+                <tr><td><br></td></tr>
+
+                {% endfor %} 
+                
+
+                
+            </tr>
+            {% endfor %} 
+        </table>
+    </center>
+
+ 
+
+    {% else %}
+        <center>
+            <p class="header">Submit Annonymous Feedback!</p>
+        </center>
+
+        <div align="center">
+            <form action='/add_to_feedback'>
+                <select name="instructor" placeholder="Instructor">
+                    {% for key, value in all_instructors.items() %} 
+                    <option> {{ key }} </option>
+                    {% endfor %}
+                    
+
+                </select>
+                <br>
+                <select name="rating" value="Choose a number">
+                    {% for number in range(6) %} 
+                    <option> {{ number }} </option>
+                    {% endfor %}
+                    
+
+                </select>
+                <br>
+                <textarea name="likeTeach" placeholder="What do you like about chosen instructor's teaching?"></textarea>
+                <br>
+                <textarea name="impTeach" placeholder="What do you think the chosen instructor could imporve on with regards to their teaching?"></textarea>
+                <br>
+                <textarea name="likeLab" placeholder="What do you like about chosen instructor's labs?"></textarea>
+                <br>
+                <textarea name="impLab" placeholder="What do you think the chosen intstructor could improve with reagrds to labs?"></textarea>
+                <br>
+                <input type="submit" name="submit" value="submit">        
+            </form>
+        </div>
+
+
+
+
+    {% endif %}
+
+{% endblock %}
