@@ -121,6 +121,32 @@
         </table>
     </center>
 
+    <!--This is for the regrade requests-->
+    <center>
+        <p class="header">Regrade Requests</p>
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>Evaluation</th>
+                <th>Reason</th>
+            </tr>
+                {% for key, value in regrades.items() %}
+            <tr>
+                {% for g in value %}
+
+                <td> {{ g[0] }}</td>
+                <td> {{ g[1] }}</td>
+                <td> {{ g[2] }}</td>
+                <tr><td><br></td></tr>
+
+                {% endfor %}
+
+            </tr>
+            {% endfor %}
+        </table>
+
+    </center>
+
 
     {% else %}
         <center>
@@ -144,6 +170,10 @@
                 </tr>
                 {% endfor %} 
             </table>
+        </center>
+
+        <center>
+            <a href="/regrade">Click here to submit a regrade request</a>
         </center>
     {% endif %}
 

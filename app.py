@@ -8,6 +8,9 @@ app = Flask(__name__)
 instructor = False
 user = ''
 
+db_col_num = {"Assignments":5, "Syllabus":10, "Labs":6, "InstructorUsers":6, "StudentUsers":6, "AssignmentGrades":4, "Feedback":7 ,"Regrade":4}
+db_insert_vals = {"Assignments":"(?,?,?,?,?)", "Syllabus":"(?,?,?,?,?,?,?,?,?,?)", "Labs":"(?,?,?,?,?,?)", "InstructorUsers":"(?,?,?,?,?,?)", "StudentUsers":"(?,?,?,?,?,?)", "AssignmentGrades":"(?,?,?,?)", "Feedback":"(?,?,?,?,?,?,?)" ,"Regrade":"(?,?,?,?)"} 
+
 '''
 Page Rendering: 
 The code below this (but above the backend) will handle the rendering of pages that students and teachers interact with. 
@@ -85,12 +88,13 @@ def admin():
     info = convert_dict(assignment_grades, 1)
     assignments = query_db('SELECT * FROM Assignments;')
     assignments = convert_dict(assignments, 5)
+    regrades = query_db('SELECT * FROM Regrade;')
+    regrades = convert_dict(regrades, 0)
 
     if not instructor and user and user in info:
         info = {user : info[user]}
     
-    print(info)
-    return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments)
+    return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments, regrades=regrades)
 
 @app.route('/feedback')
 def feedback():
@@ -100,11 +104,33 @@ def feedback():
     all_instructors = convert_dict(all_instructors,1)
     all_feedback = query_db('SELECT * FROM Feedback')
     all_feedback = convert_dict(all_feedback,1)
-    print(all_feedback)
     if instructor and user and user in all_feedback:
         all_feedback = {user : all_feedback[user]}
-    print(all_feedback)
     return render_template('feedback.html', user=user, instructor=instructor, all_instructors = all_instructors, all_feedback = all_feedback)
+
+
+@app.route('/regrade')
+def regrade():
+    global instructor
+    global user
+    return render_template('regrade.html', user=user,  instructor=instructor)
+
+@app.route('/edit_assignment')
+def edit_assignment():
+    global instructor
+    global user
+    entry = int(request.args.get('edit')[-1])
+    
+    assignment1 = query_db("SELECT * FROM Assignments a WHERE a.id = ?",[entry])
+    assignment1 = convert_dict(assignment1,0)
+    assignment2 = assignment1[(next(iter(assignment1)))]
+    assignment=assignment2[0]
+
+    
+    return render_template('edit_form.html', user=user, instructor = instructor, info=assignment, type="Assignment", aid=(next(iter(assignment1))))
+
+
+
 
 
 @app.route('/logout')
@@ -223,6 +249,20 @@ def addToFeedback():
     flash("Feedback Successfully sent!")
     return redirect('/feedback')
 
+@app.route('/submit_regrade')
+def addToRegrade():
+    userName = request.args.get('student_username')
+    assignment = request.args.get('assignment')
+    reason = request.args.get('reason')
+
+    rid = query_db('SELECT MAX(r.id) FROM Regrade r;')[0][0] + 1
+
+    with sql.connect("database.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Regrade VALUES (?,?,?,?);", (rid, userName, assignment, reason))
+    flash("Regrade Successfully sent!")
+    return redirect('/dashboard')
+
 
 
 @app.route('/add_to_syllabus')
@@ -285,6 +325,44 @@ def update_student_grade():
         return redirect('/dashboard')
     flash("User not registered!")
     return redirect('/dashboard')
+
+"""
+@app.route('/submit_edits')
+def submit_edits():
+    aid = request.args.get('aid')
+    pdf = request.args.get('name_1')
+    tex = request.args.get('name_2')
+    dueDate = request.args.get('name_3')
+    weight = request.args.get('name_4')
+    description = request.args.get('name_5')
+  
+
+    with sql.connect("database.db") as con:
+        cur = con.cursor()
+        cur.execute("UPDATE assignments a set a.id=?, a.pdf=?, a.tex=?, a.due_date=?, a.weight=?, a.description=? where a.id = ?", (aid, pdf, tex, dueDate, weight, description, [aid])
+        return redirect("/assignments")
+
+
+
+
+
+
+
+
+@app.route('/submit_edits_other')
+def submit_edits():
+ 
+  db_name = request.args.get("type")
+  info = []
+  for i in range(db_col_num[db_name]):
+    info.append(request.args.get("name_{}".format(i+1))
+  info = tuple(info)
+  with sql.connect("database.db") as con:
+    cur = con.cursor()
+    cur.execute("INSERT INTO {} VALUES {};".format(db_name, db_insert_vals[db_name]), info)
+return redirect("/assignments")
+
+"""
 '''
 Database closing
 '''
