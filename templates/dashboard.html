@@ -22,7 +22,8 @@
         <p class="header">Add To Syllabus</p>
     </center>
     <div align="center">
-        <form action='/add_to_syllabus'>
+        <form action='/add_item'>
+            <input type="hidden" name = "db" value="Syllabus">
             <input name="topic" value="topic">
             <br>
             <input name="wed_pre_lec" value="Insert Links or TB chapter To Wednesday Pre Lecture Material Seperated with Commas, put in 'None' if there is nothing">
@@ -49,7 +50,8 @@
         <p class="header">Create Assignment </p>
     </center>
     <div align="center">
-        <form action='/create_assignment'>
+        <form action='/add_item'>
+            <input type="hidden" name = "db" value="Assignments">
             <input name="pdf" value="pdf">
             <br>
             <input name="tex" value="tex">
@@ -68,7 +70,8 @@
         <p class="header">Add to Labs</p>
     </center>
     <div align="center">
-        <form action='/add_to_labs'>
+        <form action='/add_item'>
+            <input type="hidden" name = "db" value="Labs">
             <input name="topic" value="topic">
             <br>
             <input name="handout" value="Insert Link for Handout seperated with commas, if None put 'None'">
@@ -87,7 +90,7 @@
         <p class="header">Update Assignment Grade</p>
     </center>
     <div align="center">
-        <form action='/update_student_grade'>
+        <form action='/add_item'>
             <input name="aid" value="Assignment #">
             <br>
             <input name="username" value="Student's Username">

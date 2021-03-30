@@ -8,9 +8,33 @@ app = Flask(__name__)
 instructor = False
 user = ''
 
-db_col_num = {"Assignments":5, "Syllabus":10, "Labs":6, "InstructorUsers":6, "StudentUsers":6, "AssignmentGrades":4, "Feedback":7 ,"Regrade":4}
-db_insert_vals = {"Assignments":"(?,?,?,?,?)", "Syllabus":"(?,?,?,?,?,?,?,?,?,?)", "Labs":"(?,?,?,?,?,?)", "InstructorUsers":"(?,?,?,?,?,?)", "StudentUsers":"(?,?,?,?,?,?)", "AssignmentGrades":"(?,?,?,?)", "Feedback":"(?,?,?,?,?,?,?)" ,"Regrade":"(?,?,?,?)"} 
+db_check = {
+    "Assignments": "SELECT s.description FROM Assignments s WHERE s.description='{}';", 
+    "Syllabus":"SELECT s.topic FROM Syllabus s WHERE s.topic='{}';", 
+    "Labs":"SELECT s.topic FROM Labs s WHERE s.topic='{}';", 
+    "InstructorUsers":"SELECT s.username FROM InstructorUsers s WHERE s.username='{}';", 
+    "StudentUsers":"SELECT s.username FROM StudentUsers s WHERE s.username='{}';"
+    }
 
+db_insert_vals = {
+    "Assignments":"INSERT INTO Assignments VALUES(?,?,?,?,?,?);", 
+    "Syllabus":"INSERT INTO Syllabus VALUES(?,?,?,?,?,?,?,?,?,?);", 
+    "Labs":"INSERT INTO Labs VALUES(?,?,?,?,?,?);", 
+    "InstructorUsers":"INSERT INTO InstructorUsers VALUES(?,?,?,?,?,?);", 
+    "StudentUsers":"INSERT INTO StudentUsers VALUES(?,?,?,?,?,?);", 
+    "AssignmentGrades":"(?,?,?,?)", 
+    "Feedback":"(?,?,?,?,?,?,?)" ,
+    "Regrade":"(?,?,?,?)"
+    }
+
+db_update_commands = {
+    "Assignments": "UPDATE Assignments SET pdf=?,tex=?,due_date=?,weight=?,description=? WHERE id=?",
+    "Syllabus": "UPDATE Syllabus SET topic=?, wed_pre_lec=?, wed_pre_lec_labels=?, thurs_pre_lec=?, thurs_pre_lec_labels=?, wed_lec=?, wed_lec_labels=?, thurs_lec=?, thurs_lec_labels=? WHERE id=?",
+    "Labs":"UPDATE Labs SET topic=?, handout=?, handout_label=?, solutions=?, solutions_label=? WHERE id=?"
+}
+db_key_index = {
+    "Assignments":-1
+}
 '''
 Page Rendering: 
 The code below this (but above the backend) will handle the rendering of pages that students and teachers interact with. 
@@ -115,23 +139,17 @@ def regrade():
     global user
     return render_template('regrade.html', user=user,  instructor=instructor)
 
-@app.route('/edit_assignment')
-def edit_assignment():
+@app.route('/edit_entry')
+def edit_entry():
     global instructor
     global user
-    entry = int(request.args.get('edit')[-1])
+    global db_col_num
+    entry = (request.args.get('edit'))
+    db_name = entry[5:len(entry)-1]
+    info = query_db("SELECT * FROM {} a WHERE a.id={};".format(db_name, int(entry[-1])))
+    info = convert_dict(info, 0)
     
-    assignment1 = query_db("SELECT * FROM Assignments a WHERE a.id = ?",[entry])
-    assignment1 = convert_dict(assignment1,0)
-    assignment2 = assignment1[(next(iter(assignment1)))]
-    assignment=assignment2[0]
-
-    
-    return render_template('edit_form.html', user=user, instructor = instructor, info=assignment, type="Assignment", aid=(next(iter(assignment1))))
-
-
-
-
+    return render_template('edit_form.html', info=info, type=db_name, id=int(entry[-1]), instructor=instructor, user=user)
 
 @app.route('/logout')
 def log_out():
@@ -145,42 +163,6 @@ def log_out():
 Back End:
 Front end uses this for data processing
 '''
-
-@app.route('/create_student_user')
-def create_student_user():    
-    username = request.args.get('username')
-    password = request.args.get('password')
-    firstName = request.args.get('firstName')
-    lastName = request.args.get('lastName')
-    studentNo = request.args.get('studentNo')
-
-    sid = query_db('SELECT MAX(s.id) FROM StudentUsers s;')[0][0] + 1
-
-    if not query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.studentNo FROM StudentUsers s WHERE s.studentNo='{}';".format(studentNo)):            
-        with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO StudentUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, studentNo))
-        return redirect(url_for('home'))
-    flash("There is already an account with those credentials!")
-    return redirect("/new_student_acct") 
-
-@app.route('/create_instructor_user')
-def create_isntructor_user():    
-    username = request.args.get('username')
-    password = request.args.get('password')
-    firstName = request.args.get('firstName')
-    lastName = request.args.get('lastName')
-    instructorNo = request.args.get('instructorNo')
-
-    sid = query_db('SELECT MAX(s.id) FROM InstructorUsers s;')[0][0] + 1
-
-    if not query_db("SELECT s.username FROM InstructorUsers s WHERE s.username='{}';".format(username)) and not query_db("SELECT s.instructorNo FROM InstructorUsers s WHERE s.instructorNo='{}';".format(instructorNo)):            
-        with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO InstructorUsers VALUES (?,?,?,?,?,?);", (sid, username, password, firstName, lastName, instructorNo))
-        return redirect(url_for('home'))
-    flash("There is already an account with those credentials!")
-    return redirect("/new_instructor_acct")    
 
 @app.route('/verify_student_user')
 def verify_student_user():
@@ -212,100 +194,46 @@ def verify_instructor_user():
     flash('Invalid Credentials, please try again or create new account')
     return redirect('/instructor_log_in')
 
+@app.route('/add_item')
+def create():
+    global db_check 
+    global db_key_index
+    global db_insert_vals
+    args = request.args 
+    info = []
+    for key in args:
+        info.append(args[key])
+    db_name = info.pop(0)
+    
+    item_id = query_db('SELECT MAX(s.id) FROM {} s;'.format(db_name))[0][0] + 1
+    info = [item_id] + info[:-1]
 
-@app.route('/create_assignment')
-def create_new_assignemnt():    
-    pdf = request.args.get('pdf')
-    tex = request.args.get('tex')
-    dueDate = request.args.get('dueDate')
-    weight = request.args.get('weight')
-    assignmentDescription = request.args.get('assignmentDescription')
-
-    aid = query_db('SELECT MAX(a.id) FROM Assignments a;')[0][0] + 1
-
-    if not query_db("SELECT a.description FROM Assignments a WHERE a.description='{}';".format(assignmentDescription)):            
+    if not query_db(db_check[db_name].format(info[-1 if db_name in db_key_index else 0])):
         with sql.connect("database.db") as con:
             cur = con.cursor()
-            cur.execute("Insert INTO Assignments VALUES (?,?,?,?,?,?);", (aid, pdf, tex, dueDate, weight, assignmentDescription))
-        flash("Assignment Successfully added!")
+            cur.execute(db_insert_vals[db_name], tuple(info))
+        flash("Sucessfully added!")
         return redirect('/dashboard')
-    flash("There is already an assignment with that description!")
-    return redirect("/dashboard")   
-
-@app.route('/add_to_feedback')
-def addToFeedback():
-    instructor = request.args.get('instructor')
-    rating = request.args.get('rating')
-    likeTeach = request.args.get('likeTeach')
-    impTeach = request.args.get('impTeach')
-    likeLab = request.args.get('likeLab')
-    impLab = request.args.get('impLab')
-
-    fid = query_db('SELECT MAX(f.id) FROM Feedback f;')[0][0] + 1
-
-    with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO Feedback VALUES (?,?,?,?,?,?,?);", (fid, instructor, rating, likeTeach, impTeach, likeLab, impLab))
-    flash("Feedback Successfully sent!")
-    return redirect('/feedback')
-
-@app.route('/submit_regrade')
-def addToRegrade():
-    userName = request.args.get('student_username')
-    assignment = request.args.get('assignment')
-    reason = request.args.get('reason')
-
-    rid = query_db('SELECT MAX(r.id) FROM Regrade r;')[0][0] + 1
-
-    with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO Regrade VALUES (?,?,?,?);", (rid, userName, assignment, reason))
-    flash("Regrade Successfully sent!")
-    return redirect('/dashboard')
-
-
-
-@app.route('/add_to_syllabus')
-def add_to_syllabus():
-    topic = request.args.get('topic')    
-    wed_pre_lec = request.args.get('wed_pre_lec')
-    wed_pre_lec_labels = request.args.get('wed_pre_lec_labels')
-    thurs_pre_lec = request.args.get('thurs_pre_lec')
-    thurs_pre_lec_labels = request.args.get('thurs_pre_lec_labels')
-    wed_lec = request.args.get('wed_lec')
-    wed_lec_labels = request.args.get('wed_lec_labels')
-    thurs_lec = request.args.get('thurs_lec')
-    thurs_lec_labels = request.args.get('thurs_lec_labels')
-
-    sid = query_db('SELECT MAX(s.id) FROM Syllabus s;')[0][0] + 1
-
-    if not query_db("SELECT s.topic FROM Syllabus s WHERE s.topic='{}';".format(topic)):            
-        with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?,?,?,?,?);", (sid, topic, wed_pre_lec, wed_pre_lec_labels, thurs_pre_lec, thurs_pre_lec_labels, wed_lec, wed_lec_labels, thurs_lec, thurs_lec_labels))
-        flash("Sucessfully added to syllabus!")
-        return redirect('/dashboard')
-    flash("There is already an assignment with that description!")
-    return redirect("/dashboard")   
-
-@app.route('/add_to_labs')
-def add_to_labs():
-    topic = request.args.get('topic')    
-    handout = request.args.get('handout')
-    handout_label = request.args.get('handout_label')
-    solutions = request.args.get('solutions')
-    solutions_label = request.args.get('solutions_label')
-
-    lid = query_db('SELECT MAX(l.id) FROM Labs l;')[0][0] + 1
-
-    if not query_db("SELECT s.topic FROM Labs s WHERE s.topic='{}';".format(topic)):            
-        with sql.connect("database.db") as con:
-            cur = con.cursor()
-            cur.execute("Insert INTO Syllabus VALUES (?,?,?,?,?,?);", (lid, topic, handout, handout_label, solutions, solutions_label))
-        flash("Successfully added to Labs!")
-        return redirect('/dashboard')
-    flash("There is already an assignment with that description!")
+    flash("There is already an item with that description!")
     return redirect("/dashboard")
+
+
+@app.route('/submit_edits')
+def submit_edits():
+    global db_update_commands
+    db_name = request.args
+    info = []
+    for key in db_name:
+        info.append(db_name[key])
+    db_name = info.pop(0)
+    item_id = info.pop(0)
+    info.pop(-1)
+    info.append(item_id)
+    info = tuple(info)
+    with sql.connect("database.db") as con: 
+        cur = con.cursor()
+        cur.execute(db_update_commands[db_name[:-1]], info)
+    return redirect("/home")
 
 @app.route('/update_student_grade')
 def update_student_grade():
@@ -326,43 +254,6 @@ def update_student_grade():
     flash("User not registered!")
     return redirect('/dashboard')
 
-"""
-@app.route('/submit_edits')
-def submit_edits():
-    aid = request.args.get('aid')
-    pdf = request.args.get('name_1')
-    tex = request.args.get('name_2')
-    dueDate = request.args.get('name_3')
-    weight = request.args.get('name_4')
-    description = request.args.get('name_5')
-  
-
-    with sql.connect("database.db") as con:
-        cur = con.cursor()
-        cur.execute("UPDATE assignments a set a.id=?, a.pdf=?, a.tex=?, a.due_date=?, a.weight=?, a.description=? where a.id = ?", (aid, pdf, tex, dueDate, weight, description, [aid])
-        return redirect("/assignments")
-
-
-
-
-
-
-
-
-@app.route('/submit_edits_other')
-def submit_edits():
- 
-  db_name = request.args.get("type")
-  info = []
-  for i in range(db_col_num[db_name]):
-    info.append(request.args.get("name_{}".format(i+1))
-  info = tuple(info)
-  with sql.connect("database.db") as con:
-    cur = con.cursor()
-    cur.execute("INSERT INTO {} VALUES {};".format(db_name, db_insert_vals[db_name]), info)
-return redirect("/assignments")
-
-"""
 '''
 Database closing
 '''

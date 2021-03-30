@@ -32,17 +32,18 @@
                         </a>
                     </center>
                 </div>
+                {% if instructor %}
                 <center>
-                <div class="col_pleft">
+                    <div class="col_pleft">
+                        
+                            <form action="/edit_entry">
+                                <input name="edit" value="Edit Assignments {{ key }}" type="submit">
+    
+                            </form>
                     
-                        <form action="/edit_assignment">
-                            <input name="edit" value="Edit {{ value[0][-1] }}" type="submit">
-
-                        </form>
-                
-                </div>
-                </center>
-                
+                    </div>
+                    </center>
+                {% endif %}                 
             </div>
             
             {% endfor %}

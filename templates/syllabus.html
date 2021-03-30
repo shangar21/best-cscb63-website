@@ -31,7 +31,20 @@
                     <a href='{{ value[0][7][loop.index - 1] }}'>{{ lec }}</a>
                     {% endfor %}
                 </p>
+                {% if instructor %}
+                <center>
+                    <div class="col_pleft">
+                        
+                            <form action="/edit_entry">
+                                <input name="edit" value="Edit Syllabus {{ key }}" type="submit">
+    
+                            </form>
+                    
+                    </div>
+                    </center>
+                {% endif %} 
             </div>
+
             
             {% endfor %}
         </div>
