@@ -132,6 +132,7 @@
                 <th>Username</th>
                 <th>Evaluation</th>
                 <th>Reason</th>
+                <th>Remove</th>
             </tr>
                 {% for key, value in regrades.items() %}
             <tr>
@@ -140,6 +141,11 @@
                 <td> {{ g[0] }}</td>
                 <td> {{ g[1] }}</td>
                 <td> {{ g[2] }}</td>
+                <td>
+                    <form action="/remove_entry">
+                        <input name="delete" value="Remove Regrade {{ key }}" type="submit">
+                    </form>
+                </td>
                 <tr><td><br></td></tr>
 
                 {% endfor %}
