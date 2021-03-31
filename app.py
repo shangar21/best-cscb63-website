@@ -263,7 +263,10 @@ def update_student_grade():
                 cur.execute('INSERT INTO assignmentGrades VALUES(?,?,?,?)', (aid, username, grade, weight))
             flash("Sucessfully updated Grade!")
             return redirect('/dashboard')
-        flash("Grade Already Updated!")
+        with sql.connect('database.db') as con: 
+            cur = con.cursor()
+            cur.execute("UPDATE assignmentGrades SET grade=? WHERE aid=? AND username=?", (grade, aid, username))
+        flash("Grade changed!")
         return redirect('/dashboard')
     flash("User not registered!")
     return redirect('/dashboard')
