@@ -7,33 +7,35 @@
     </center>
 
     <center>
-        <table>
-            <tr> 
-                <th>Rating</th>
-                <th>Pros of Teaching</th>
-                <th>Cons of teaching</th>
-                <th>Pros of Labs</th>
-                <th>Cons of Labs</th>
+        <div class="resp-table">
+            <div class="tableRow"> 
+                <div class="tableHeader">Rating</div>
+                <div class="tableHeader">Pros of Teaching</div>
+                <div class="tableHeader">Cons of teaching</div>
+                <div class="tableHeader">Pros of Labs</div>
+                <div class="tableHeader">Cons of Labs</div>
                 
-            </tr>
+            </div>
             {% for key, value in all_feedback.items() %} 
-            <tr>
+            <div class="tableRow">
                 
                 {% for g in value %} 
-                <td> {{ g[1] }}</td>
-                <td> {{ g[2] }}</td>
-                <td> {{ g[3] }}</td>
-                <td> {{ g[4] }}</td>
-                <td> {{ g[5] }}</td>
-                <tr><td><br></td></tr>
-
+                <div class="tableData"> {{ g[1] }}</div>
+                <div class="tableData"> {{ g[2] }}</div>
+                <div class="tableData"> {{ g[3] }}</div>
+                <div class="tableData"> {{ g[4] }}</div>
+                <div class="tableData"> {{ g[5] }}</div>
+                <div class="break"></div>
                 {% endfor %} 
                 
+                
+                
 
                 
-            </tr>
+            </div>
+
             {% endfor %} 
-        </table>
+        </div>
     </center>
 
  

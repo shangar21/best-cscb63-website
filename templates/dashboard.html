@@ -106,53 +106,53 @@
     </center>
 
     <center>
-        <table>
-            <tr> 
-                <th>Username</th>
+        <div class="resp-table">
+            <div class="tableRow"> 
+                <div class="tableHeader">Username</div>
                 {% for key, value in assignments.items() %} 
-                <th>{{ key }}</th>
+                <div class="tableHeader">{{ key }}</div>
                 {% endfor %}
-            </tr>
+            </div>
             {% for key, value in grade_info.items() %} 
-            <tr>
-                <th>{{ key }}</th>
+            <div class="tableRow">
+                <div class="tableData">{{ key }}</div>
                 {% for g in value %} 
-                <th> {{ g[1] }}</th>
+                <div class="tableData"> {{ g[1] }}</div>
                 {% endfor %} 
-            </tr>
+            </div>
             {% endfor %} 
-        </table>
+        </div>
     </center>
 
     <!--This is for the regrade requests-->
     <center>
         <p class="header">Regrade Requests</p>
-        <table>
-            <tr>
-                <th>Username</th>
-                <th>Evaluation</th>
-                <th>Reason</th>
-                <th>Remove</th>
-            </tr>
+        <div class="resp-table">
+            <div class="tableRow">
+                <div class="tableHeader">Username</div>
+                <div class="tableHeader">Evaluation</div>
+                <div class="tableHeader">Reason</div>
+                <div class="tableHeader">Remove</div>
+            </div>
                 {% for key, value in regrades.items() %}
-            <tr>
+            <div class="tableRow">
                 {% for g in value %}
 
-                <td> {{ g[0] }}</td>
-                <td> {{ g[1] }}</td>
-                <td> {{ g[2] }}</td>
-                <td>
+                <div class="tableData"> {{ g[0] }}</div>
+                <div class="tableData"> {{ g[1] }}</div>
+                <div class="tableData"> {{ g[2] }}</div>
+                <div class="tableData">
                     <form action="/remove_entry">
                         <input name="delete" value="Remove Regrade {{ key }}" type="submit">
                     </form>
-                </td>
-                <tr><td><br></td></tr>
+                </div>
+                <div class="tableRow"><div class="tableData"><br></div></div>
 
                 {% endfor %}
 
-            </tr>
+            </div>
             {% endfor %}
-        </table>
+        </div>
 
     </center>
 
@@ -163,22 +163,26 @@
         </center>
 
         <center>
-            <table>
-                <tr> 
-                    <th>Username</th>
+            <p class="topic">{{ user }}'s current grade is: {{ total }}</p>
+        </center>
+
+        <center>
+            <div class="resp-table">
+                <div class="tableRow"> 
+                    <div class="tableHeader">Username</div>
                     {% for key, value in assignments.items() %} 
-                    <th>{{ key }}</th>
+                    <div class="tableHeader">{{ key }}</div>
                     {% endfor %}
-                </tr>
+                </div>
                 {% for key, value in grade_info.items() %} 
-                <tr>
-                    <th>{{ key }}</th>
+                <div class="tableRow">
+                    <div class="tableData">{{ key }}</div>
                     {% for g in value %} 
-                    <th> {{ g[1] }}</th>
+                    <div class="tableData"> {{ g[1] }}</div>
                     {% endfor %} 
-                </tr>
+                </div>
                 {% endfor %} 
-            </table>
+            </div>
         </center>
 
         <center>

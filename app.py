@@ -115,10 +115,33 @@ def admin():
     regrades = query_db('SELECT * FROM Regrade;')
     regrades = convert_dict(regrades, 0)
 
+    all_grades = query_db("SELECT grade FROM AssignmentGrades a WHERE a.username=?",([user]))
+    all_grades_list =list(all_grades)
+    all_grades=[]
+    all_weights = query_db("SELECT weight FROM AssignmentGrades a WHERE a.username=?",([user]))
+    all_weights_list=list(all_weights)
+    all_weights=[]
+
+
+    for grade in range(len(all_grades_list)):
+        all_grades.append(all_grades_list[grade][0])
+        all_weights.append(all_weights_list[grade][0])
+
+    sumWeighted = 0
+    sumWeights = 0
+
+    for i in range(len(all_grades)):
+        sumWeighted = sumWeighted +(all_grades[i]*all_weights[i])
+        sumWeights = sumWeights+all_weights[i]
+    
+    total = round(sumWeighted/sumWeights)
+
+    
+
     if not instructor and user and user in info:
         info = {user : info[user]}
     
-    return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments, regrades=regrades)
+    return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments, regrades=regrades, total=total)
 
 @app.route('/feedback')
 def feedback():
