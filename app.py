@@ -235,6 +235,20 @@ def submit_edits():
         cur.execute(db_update_commands[db_name[:-1]], info)
     return redirect("/home")
 
+@app.route('/remove_entry')
+def remove_item():
+    global db_check 
+    global db_key_index
+    global db_insert_vals
+    args = request.args.get("delete") 
+    info = []
+    db_name = args[7:-2]
+    item_id = int(args[-1])
+    with sql.connect("database.db") as con: 
+        cur = con.cursor()
+        cur.execute("DELETE FROM {} WHERE id=(?);".format(db_name), (item_id,))
+    return redirect("/home")
+
 @app.route('/update_student_grade')
 def update_student_grade():
     aid = request.args.get('aid')
