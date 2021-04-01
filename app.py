@@ -120,11 +120,9 @@ def admin():
 
     if not instructor:
         student_grades = query_db("SELECT * FROM AssignmentGrades a WHERE a.username=?",([user]))
-        total = weighted_avg_calc(student_grades)
-      
+        total = weighted_avg_calc(student_grades) if student_grades else {"No current Grade":"No current Grade"}
+        info = {user : info[user]} if user in info else {"No current Grade":["No current Grade", "No current Grade"]}
 
-    if not instructor and user and user in info:
-        info = {user : info[user]}
     
     return render_template('dashboard.html', user=user, instructor=instructor, grade_info=info, assignments=assignments, regrades=regrades, total=total)
 
