@@ -37,3 +37,11 @@ def convert_dict(lst, index):
     return di 
 
         
+def weighted_avg_calc(info):
+    di = convert_dict(info, 1)
+    gw = lambda x: x[1]*x[2]
+    w = lambda x: x[2]
+    sxw = {k: sum(list(map(gw, v))) for k,v in di.items()}
+    sw = {k: sum(list(map(w, v))) for k,v in di.items()}
+    totals = {k: sxw[k]/v for k,v in sw.items()}
+    return totals

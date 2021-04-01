@@ -5,12 +5,13 @@
     </center>
 
     <div align="center">
-        <form action='/submit_regrade'>
+        <form action='/add_item'>
+            <input type="hidden" name = "db" value="Regrade">
             <input name="student_username", placeholder="Enter your username as it appears">
             <input name="assignment", placeholder="Enter the evalution to be regraded">
             <textarea name="reason", placeholder="Reason"></textarea>
             <br>
-            <input type="submit" name="submit" value="Submit regrade request">        
+            <input type="submit" name="submit" value="Submit">        
 
         </form>
 

@@ -1,4 +1,4 @@
-from database import get_db, query_db, make_dicts, close_db, convert_dict
+from database import get_db, query_db, make_dicts, close_db, convert_dict, weighted_avg_calc
 from flask import Flask, render_template,  request, g, current_app, flash, redirect, url_for
 import sqlite3 as sql
 
@@ -13,7 +13,8 @@ db_check = {
     "Syllabus":"SELECT s.topic FROM Syllabus s WHERE s.topic='{}';", 
     "Labs":"SELECT s.topic FROM Labs s WHERE s.topic='{}';", 
     "InstructorUsers":"SELECT s.username FROM InstructorUsers s WHERE s.username='{}';", 
-    "StudentUsers":"SELECT s.username FROM StudentUsers s WHERE s.username='{}';"
+    "StudentUsers":"SELECT s.username FROM StudentUsers s WHERE s.username='{}';",
+    "Regrade":"SELECT s.id FROM Regrade s WHERE s.id='{}';"
     }
 
 db_insert_vals = {
@@ -24,7 +25,7 @@ db_insert_vals = {
     "StudentUsers":"INSERT INTO StudentUsers VALUES(?,?,?,?,?,?);", 
     "AssignmentGrades":"(?,?,?,?)", 
     "Feedback":"(?,?,?,?,?,?,?)" ,
-    "Regrade":"(?,?,?,?)"
+    "Regrade":"INSERT INTO Regrade VALUES(?,?,?,?)"
     }
 
 db_update_commands = {
@@ -115,28 +116,12 @@ def admin():
     regrades = query_db('SELECT * FROM Regrade;')
     regrades = convert_dict(regrades, 0)
 
-    all_grades = query_db("SELECT grade FROM AssignmentGrades a WHERE a.username=?",([user]))
-    all_grades_list =list(all_grades)
-    all_grades=[]
-    all_weights = query_db("SELECT weight FROM AssignmentGrades a WHERE a.username=?",([user]))
-    all_weights_list=list(all_weights)
-    all_weights=[]
+    total = weighted_avg_calc(assignment_grades)
 
-
-    for grade in range(len(all_grades_list)):
-        all_grades.append(all_grades_list[grade][0])
-        all_weights.append(all_weights_list[grade][0])
-
-    sumWeighted = 0
-    sumWeights = 0
-
-    for i in range(len(all_grades)):
-        sumWeighted = sumWeighted +(all_grades[i]*all_weights[i])
-        sumWeights = sumWeights+all_weights[i]
-    
-    total = round(sumWeighted/sumWeights)
-
-    
+    if not instructor:
+        student_grades = query_db("SELECT * FROM AssignmentGrades a WHERE a.username=?",([user]))
+        total = weighted_avg_calc(student_grades)
+      
 
     if not instructor and user and user in info:
         info = {user : info[user]}
@@ -231,7 +216,7 @@ def create():
     item_id = query_db('SELECT MAX(s.id) FROM {} s;'.format(db_name))[0][0] + 1
     info = [item_id] + info[:-1]
 
-    if not query_db(db_check[db_name].format(info[-1 if db_name in db_key_index else 0])):
+    if not query_db(db_check[db_name].format(info[-1 if db_name in db_key_index else 1])):
         with sql.connect("database.db") as con:
             cur = con.cursor()
             cur.execute(db_insert_vals[db_name], tuple(info))

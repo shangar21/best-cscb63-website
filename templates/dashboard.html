@@ -109,16 +109,21 @@
         <div class="resp-table">
             <div class="tableRow"> 
                 <div class="tableHeader">Username</div>
+                <div class="tableHeader">Total</div>
                 {% for key, value in assignments.items() %} 
                 <div class="tableHeader">{{ key }}</div>
                 {% endfor %}
+
             </div>
             {% for key, value in grade_info.items() %} 
             <div class="tableRow">
+
                 <div class="tableData">{{ key }}</div>
+                <div class="tableData">{{ total[key] }}</div>
                 {% for g in value %} 
                 <div class="tableData"> {{ g[1] }}</div>
                 {% endfor %} 
+
             </div>
             {% endfor %} 
         </div>
@@ -163,7 +168,7 @@
         </center>
 
         <center>
-            <p class="topic">{{ user }}'s current grade is: {{ total }}</p>
+            <p class="topic">{{ user }}'s current grade is: {{ total[user] }}</p>
         </center>
 
         <center>
