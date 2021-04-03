@@ -215,7 +215,7 @@ def create():
     info = [item_id] + info[:-1]
 
     if not query_db(db_check[db_name].format(info[-1 if db_name in db_key_index else 1])):
-        with sql.connect("database.db") as con:
+        with sql.connect("assignment3.db") as con:
             cur = con.cursor()
             cur.execute(db_insert_vals[db_name], tuple(info))
         flash("Sucessfully added!")
@@ -236,7 +236,7 @@ def submit_edits():
     info.pop(-1)
     info.append(item_id)
     info = tuple(info)
-    with sql.connect("database.db") as con: 
+    with sql.connect("assignment3.db") as con: 
         cur = con.cursor()
         cur.execute(db_update_commands[db_name[:-1]], info)
     return redirect("/home")
@@ -250,7 +250,7 @@ def remove_item():
     info = []
     db_name = args[7:-2]
     item_id = int(args[-1])
-    with sql.connect("database.db") as con: 
+    with sql.connect("assignment3.db") as con: 
         cur = con.cursor()
         cur.execute("DELETE FROM {} WHERE id=(?);".format(db_name), (item_id,))
     return redirect("/home")
@@ -264,18 +264,36 @@ def update_student_grade():
     if query_db("SELECT s.username FROM StudentUsers s WHERE s.username='{}';".format(username)) and query_db('SELECT a.id FROM Assignments a WHERE a.id={};'.format(aid)):
         if not query_db("SELECT g.username, g.aid FROM AssignmentGrades g WHERE g.username='{}' AND g.aid={};".format(username, aid)):            
             weight = query_db("SELECT a.weight FROM Assignments a WHERE a.id='{}';".format(aid))[0][0]
-            with sql.connect('database.db') as con:
+            with sql.connect('assignment3.db') as con:
                 cur = con.cursor()
                 cur.execute('INSERT INTO assignmentGrades VALUES(?,?,?,?)', (aid, username, grade, weight))
             flash("Sucessfully updated Grade!")
             return redirect('/dashboard')
-        with sql.connect('database.db') as con: 
+        with sql.connect('assignment3.db') as con: 
             cur = con.cursor()
             cur.execute("UPDATE assignmentGrades SET grade=? WHERE aid=? AND username=?", (grade, aid, username))
         flash("Grade changed!")
         return redirect('/dashboard')
     flash("User not registered!")
     return redirect('/dashboard')
+
+
+@app.route('/add_to_feedback')
+def addToFeedback():
+    instructor = request.args.get('instructor')
+    rating = request.args.get('rating')
+    likeTeach = request.args.get('likeTeach')
+    impTeach = request.args.get('impTeach')
+    likeLab = request.args.get('likeLab')
+    impLab = request.args.get('impLab')
+
+    fid = query_db('SELECT MAX(f.id) FROM Feedback f;')[0][0] + 1
+
+    with sql.connect("assignment3.db") as con:
+            cur = con.cursor()
+            cur.execute("Insert INTO Feedback VALUES (?,?,?,?,?,?,?);", (fid, instructor, rating, likeTeach, impTeach, likeLab, impLab))
+    
+    return redirect('/feedback')
 
 '''
 Database closing

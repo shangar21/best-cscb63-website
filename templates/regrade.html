@@ -3,6 +3,9 @@
     <center>
         <p class="header">Submit a Regrade Request</p>
     </center>
+    <body>
+        
+    
 
     <div align="center">
         <form action='/add_item'>
@@ -11,10 +14,16 @@
             <input name="assignment", placeholder="Enter the evalution to be regraded">
             <textarea name="reason", placeholder="Reason"></textarea>
             <br>
-            <input type="submit" name="submit" value="Submit">        
-
+            <input onclick="regradeSuccess()"type="submit" name="submit" value="Submit">        
+            <script>
+                function regradeSuccess() {
+                    alert("Regrade request sent successfully!");
+                }
+            </script>
         </form>
 
     </div>
+
+</body>
 
 {% endblock %}

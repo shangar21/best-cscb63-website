@@ -32,6 +32,11 @@
  
 
     {% else %}
+
+    <!-- <script src="./static/basic.js"></script> -->
+    <body>
+        
+    
         <center>
             <p class="header">Submit Annonymous Feedback!</p>
         </center>
@@ -62,11 +67,18 @@
                 <br>
                 <textarea name="impLab" placeholder="What do you think the chosen intstructor could improve with reagrds to labs?"></textarea>
                 <br>
-                <input type="submit" name="submit" value="submit">        
+                
+                <input onclick="feedbackSent()" id="sendFeedback" type="submit" name="submit" value="Submit">        
+                <script>
+                    function feedbackSent() {
+                        alert("Feedback Sent Successfully!")
+                    }
+                </script>
+                <!-- <script src="./static/basic.js"></script> -->
             </form>
         </div>
 
-
+        </body>
 
 
     {% endif %}
