@@ -9,7 +9,7 @@
         <br>
         {% for key, value in info.items() %}
             {% for item in value[0] %}
-                <input type="text" name="name_{{ loop.index }}" value="{{ item }}">
+                <textarea type="text" name="name_{{ loop.index }}" value="{{ item }}">{{ item }}</textarea>
                 <br>
             {% endfor %} 
         {% endfor %}
