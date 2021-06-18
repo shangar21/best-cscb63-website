@@ -5,6 +5,8 @@ import sqlite3 as sql
 
 
 app = Flask(__name__)
+app.secret_key = 'VyC74LX3hb'
+app.config['SECRET_KEY'] = 'VyC74LX3hb'
 instructor = False
 user = ''
 
@@ -305,5 +307,4 @@ def close_connection(exception):
         db.close()
 
 if __name__ == "__main__":
-    app.secret_key = 'VyC74LX3hb'
     app.run(debug=True)
